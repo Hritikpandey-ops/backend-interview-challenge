@@ -1,62 +1,52 @@
-# How to Submit Your Solution
+Task Sync AP
 
-## Important: Do NOT Create Pull Requests
+The Task Sync API is a backend service designed to support an offline-first task management application. It provides a robust set of RESTful endpoints for creating, reading, updating, and deleting tasks. The core feature of this API is its asynchronous synchronization mechanism, which allows the client application to function seamlessly offline and sync data with the server once connectivity is restored.
 
-This is a public repository used by multiple candidates. To maintain fairness and confidentiality:
-- **DO NOT** create pull requests against this repository
-- **DO NOT** make your solution public
-- **DO NOT** share your solution with other candidates
+This project is implemented in Go and utilizes SQLite for local data persistence, making it lightweight, efficient, and easy to deploy
 
-## Submission Steps
+Key Features
+# Offline-First Architecture: Changes made by the client are saved locally and queued for synchronization, ensuring a smooth user experience without a constant internet connection.
+# Asynchronous Synchronization: A dedicated sync queue manages all data operations (create, update, delete) and processes them in batches
+# Resilient Retry Mechanism: The sync service includes a built-in retry mechanism with a configurable number of attempts to handle transient network failures gracefully.
+# Conflict Resolution: A simple yet effective "last-write-wins" strategy is implemented based on timestamps to handle data conflicts during synchronization.
+# RESTful Endpoints: A clean and intuitive set of API endpoints for comprehensive task management.
+# Database Migrations: The database schema is managed through code-based migrations, ensuring consistency across all environments.
 
-### 1. Fork This Repository
-```bash
-# Click the "Fork" button on GitHub
-# IMPORTANT: Make your fork PRIVATE immediately after forking
-```
+Prerequisites
+# Go (version 1.21 or higher)
+# Docker and Docker Compose
+# A tool for making HTTP requests, such as curl or Postman.
 
-### 2. Complete the Challenge
-- Clone your private fork locally
-- Implement all the TODOs
-- Ensure all tests pass
-- Commit your changes regularly
+Installation and Execution
+# Using Docker (Recommended)
+For a clean and isolated environment, it is recommended to run the application using Docker.
+Build and Run with Docker Compose:
+docker-compose up --build (bash)
+The API will be available at http://localhost:3000
 
-### 3. Prepare Your Submission
-Before submitting, ensure:
-- [ ] All tests pass (`npm test`)
-- [ ] No linting errors (`npm run lint`)
-- [ ] No TypeScript errors (`npm run typecheck`)
-- [ ] You've documented any assumptions in your README
+API Endpoints
+# The base URL for all API endpoints is http://localhost:3000/api
+Task Management
+Method GET localhost:3000/api/tasks (Retrieve a list of all tasks.)
+Method GET localhost:3000/api/tasks/:id (Retrieve a single task by its ID.)
+Method POST localhost:3000/api/tasks (Create a new task.)
+Method PUT localhost:3000/api/tasks/:id (Update an existing task.)
+Method DELETE localhost:3000/api/tasks/:id (Soft delete a task.)
 
-### 4. Grant Access
-Add the following GitHub users as collaborators to your private fork:
-- Will be provided in your Google Form submission
+Synchronization
+METHOD POST localhost:3000/api//sync/trigger (Trigger the synchronization process.)
+Method GET localhost:3000/api//sync/status (Check the current status of the sync service.)
+METHOD GET localhost:3000/api//sync/queue (View the contents of the sync queue.)
 
-### 5. Submit via Google Form
-Complete your submission using the Google Form link provided by HR:
-- Your private repository URL
-- Time taken to complete
-- Brief explanation of your approach
-- Any challenges faced or assumptions made
+Testing
+This project includes a suite of unit and integration tests to ensure the reliability and correctness of the application.
+To run the tests, execute the following command from the project's task-sync-api directory:
+go test -v ./test/ (bash)
+The tests utilize an in-memory SQLite database to ensure that the test environment is isolated and that tests do not interfere with each other or with any persistent data.
 
-## Questions?
-
-- **DO NOT** create issues on this public repository
-- Email all questions to: **HR@PearlThoughts.com**
-- Include `[Interview Challenge]` and your name in the subject line
-
-## Evaluation Timeline
-
-- Submission confirmation: Within 24 hours
-- Technical review: 3-5 business days
-- Follow-up discussion: If selected, within 1 week
-
-## Tips for Success
-
-1. **Read Everything First**: Go through all docs before starting
-2. **Plan Your Approach**: Think about the sync strategy before coding
-3. **Test Thoroughly**: We run additional tests during review
-4. **Clean Code**: We value readability and maintainability
-5. **Document Decisions**: Explain non-obvious choices in comments
-
-Good luck! We look forward to reviewing your solution.
+Architecture and Design
+The application follows a standard layered architecture to separate concerns and improve maintainability:
+Handlers: Responsible for parsing HTTP requests and formatting HTTP responses.
+Services: Contain the core business logic of the application.
+Database: Manages all interactions with the SQLite database, including migrations and data access.
+Models: Define the data structures used throughout the application.

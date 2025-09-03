@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  task-sync-api:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - DATABASE_PATH=/data/tasks.db
+      - SYNC_BATCH_SIZE=50
+      - MAX_RETRIES=3
+    volumes:
+      - ./data:/data
+    restart: unless-stopped
+
